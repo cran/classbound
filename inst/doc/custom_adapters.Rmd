@@ -1,0 +1,138 @@
+---
+title: "Custom Predictions and Adapters"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Custom Predictions and Adapters}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+`classbound` is designed to work with the widest possible range of R classifiers.
+This vignette explains how prediction routing works and how to handle classifiers
+whose APIs do not fit the default path.
+
+## The prediction philosophy
+
+```
+Standard classifier (predict returns factor/vector)
+    → handled automatically via predict_adapter.default()
+
+Non-standard classifier (predict returns a list or complex object)
+    → provide predfun to extract class labels
+
+Officially supported classifiers (rpart, randomForest, PPtree, ppforest2)
+    → handled by built-in S3 adapters with full probability support
+```
+
+## 1. Standard classifiers (no extra work needed)
+
+If a classifier's `predict()` method returns a vector or factor of class labels directly,
+`classbound` handles it automatically. No configuration is needed.
+
+```{r standard, eval=FALSE}
+library(classbound)
+library(palmerpenguins)
+penguins <- na.omit(palmerpenguins::penguins[
+  ,
+  c("species", "bill_length_mm", "bill_depth_mm")
+])
+
+# e1071::svm returns a factor of class labels; works out of the box
+classbound(penguins, species ~ bill_length_mm + bill_depth_mm, e1071::svm)
+```
+
+## 2. Non-standard models (using `predfun`)
+
+Some classifiers return a list, data frame, or other complex object from `predict()`.
+The default path will stop with an informative error message suggesting you provide
+a `predfun`. The `predfun` receives the fitted model and new data, and must return
+either a factor/vector of class labels, or a list with `$class` and `$probs`.
+
+```{r predfun, eval=FALSE}
+# MASS::qda returns list($class, $posterior, $x), so extract $class
+classbound(
+  penguins,
+  species ~ bill_length_mm + bill_depth_mm,
+  MASS::qda,
+  predfun = function(model, newdata, ...) predict(model, newdata, ...)$class
+)
+
+# MASS::lda (same approach)
+classbound(
+  penguins,
+  species ~ bill_length_mm + bill_depth_mm,
+  MASS::lda,
+  predfun = function(model, newdata, ...) predict(model, newdata, ...)$class
+)
+
+# Return probabilities as well (enables gradient visualization)
+classbound(
+  penguins,
+  species ~ bill_length_mm + bill_depth_mm,
+  MASS::lda,
+  predfun = function(model, newdata, ...) {
+    out <- predict(model, newdata, ...)
+    list(class = out$class, probs = out$posterior)
+  }
+)
+```
+
+The `predfun` argument is available in `classbound()`, `fit_model()` (via `boundary_compute()`),
+and `predict_model()`.
+
+## 3. Officially supported classifiers (built-in adapters)
+
+`classbound` maintains a small set of built-in S3 adapters for classifiers whose
+APIs require model-specific handling to extract both class labels and probabilities:
+
+| Classifier | Adapter | Probabilities |
+|---|---|---|
+| `rpart::rpart` | `predict_adapter.rpart` | Yes |
+| `randomForest::randomForest` | `predict_adapter.randomForest` | Yes |
+| `PPtreeViz::PPTreeclass` | `predict_adapter.PPtreeclass` | No |
+| `PPtreeExt::PPtreeExtclass` | `predict_adapter.PPtreeExtclass` | No |
+| `ppforest2::pprf` | `predict_adapter.pprf_classification` | Yes |
+
+These adapters are invoked automatically when the classifier object belongs to the
+corresponding S3 class. No `predfun` is needed.
+
+## The adapter contract
+
+Every prediction path must produce a list with exactly two elements:
+
+```r
+list(
+  class = factor(...),  # vector of predicted class labels
+  probs = matrix(...)   # n x K probability matrix, or NULL
+)
+```
+
+`probs` must be `NULL` for classifiers that do not provide probability estimates.
+`classbound` handles `NULL` probabilities gracefully: the boundary plot renders with
+flat (non-gradient) colored regions instead of a probability surface.
+
+## 4. Writing a custom S3 adapter
+
+Custom S3 adapters are only needed if you are building an extension package for
+`classbound` and want to officially support a complex classifier without requiring
+users to write `predfun` every time.
+
+For most users, a `predfun` is sufficient and far simpler.
+
+```{r custom_adapter, eval=FALSE}
+# Example: custom adapter for a hypothetical classifier "myModel"
+predict_adapter.myModel <- function(model, newdata, ...) {
+  raw <- predict(model, newdata, type = "response")
+  list(
+    class = factor(raw$labels),
+    probs = as.matrix(raw$probabilities)
+  )
+}
+```
+
+Define the method in your package's namespace and it will be dispatched automatically
+whenever `classbound` encounters a model object of class `"myModel"`.

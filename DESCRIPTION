@@ -1,0 +1,51 @@
+Package: classbound
+Title: Visualization for Classification Decision Boundaries
+Version: 1.0.0
+Authors@R: c(
+    person(given = "Vaibhav",
+           family = "Manihar",
+           role = c("aut", "cre"),
+           email = "vaibhav.manihar@gmail.com"),
+    person(given = "Natalia",
+           family = "da Silva",
+           role = "aut",
+           email = "natalia.dasilva@fcea.edu.uy",
+           comment = c(ORCID = "https://orcid.org/0000-0002-6031-7451")),
+    person(given = "Ignacio",
+           family = "Alvarez-Castro",
+           role = "aut",
+           email = "ignacio.lavarez@fcea.edu.uy",
+           comment = c(ORCID = "https://orcid.org/0000-0003-1633-2432"))        
+    )
+Description: Exploring, visualizing, and comparing classification decision boundaries.
+    Provides a unified interface for fitting classifiers and rendering 2D decision
+    boundary plots, with support for 2D slice visualization (fixing non-plotted dimensions at
+    reference values) and projection-based visualization for high-dimensional data (including
+    Principal Component Analysis (PCA) and tour projections from the 'tourr' package).
+    Supports native 'R' classifiers, 'tidymodels' workflows, and custom user-supplied models via
+    a flexible adapter system. Includes an interactive 'Shiny' application ('explorapp') for
+    visual exploration, data simulation, drawing, model comparison, probability surfaces, and
+    reproducible exports.
+License: GPL (>= 2)
+URL: https://github.com/natydasilva/classbound,
+        https://natydasilva.github.io/classbound/
+LazyData: yes
+Depends: R (>= 4.3.0)
+Imports: class, ggplot2, rlang, ggnewscale, shiny, DT, RColorBrewer
+Suggests: tidymodels, workflowsets, workflows, parsnip, tourr, rpart,
+        roxygen2 (>= 7.3.0), PPtreeViz, PPtreeExt, ppforest2,
+        randomForest, testthat (>= 3.0.0), knitr, rmarkdown,
+        palmerpenguins, e1071, MixSim, MASS, jsonlite
+Encoding: UTF-8
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Config/roxygen2/version: 8.1.0
+NeedsCompilation: no
+Packaged: 2026-09-20 18:35:46 UTC; Manihar
+Author: Vaibhav Manihar [aut, cre],
+  Natalia da Silva [aut] (ORCID: <https://orcid.org/0000-0002-6031-7451>),
+  Ignacio Alvarez-Castro [aut] (ORCID:
+    <https://orcid.org/0000-0003-1633-2432>)
+Maintainer: Vaibhav Manihar <vaibhav.manihar@gmail.com>
+Repository: CRAN
+Date/Publication: 2026-09-30 09:10:15 UTC
