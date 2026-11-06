@@ -369,8 +369,9 @@ reference values</td>
 </tr>
 <tr class="even">
 <td><strong>Projection</strong></td>
-<td>All features combined into two projected axes via a linear
-transformation</td>
+<td>Two axes that are linear combinations of all features; the regions
+are the model’s predictions on that 2D plane through the data
+center</td>
 </tr>
 </tbody>
 </table>
@@ -400,7 +401,18 @@ question.</p>
 <span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; Boundary: Not yet computed (Run `boundary_compute()`)</span></span>
 <span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; -- Native Model --</span></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; n= 342 \n\nnode), split, n, loss, yval, (yprob)\n      * denotes terminal node\n\n1) root 342 191 Adelie (0.441520468 0.198830409 0.359649123)  \n  2) flipper_length_mm&lt; 206.5 213  64 Adelie (0.699530516 0.295774648 0.004694836)  \n    4) bill_length_mm&lt; 43.35 150   5 Adelie (0.966666667 0.033333333 0.000000000) *\n    5) bill_length_mm&gt;=43.35 63   5 Chinstrap (0.063492063 0.920634921 0.015873016) *\n  3) flipper_length_mm&gt;=206.5 129   7 Gentoo (0.015503876 0.038759690 0.945736434)  \n    6) bill_depth_mm&gt;=17.65 7   2 Chinstrap (0.285714286 0.714285714 0.000000000) *\n    7) bill_depth_mm&lt; 17.65 122   0 Gentoo (0.000000000 0.000000000 1.000000000) *</span></span></code></pre></div>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; n= 342 </span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; node), split, n, loss, yval, (yprob)</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt;       * denotes terminal node</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; 1) root 342 191 Adelie (0.441520468 0.198830409 0.359649123)  </span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt;   2) flipper_length_mm&lt; 206.5 213  64 Adelie (0.699530516 0.295774648 0.004694836)  </span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt;     4) bill_length_mm&lt; 43.35 150   5 Adelie (0.966666667 0.033333333 0.000000000) *</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt;     5) bill_length_mm&gt;=43.35 63   5 Chinstrap (0.063492063 0.920634921 0.015873016) *</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co">#&gt;   3) flipper_length_mm&gt;=206.5 129   7 Gentoo (0.015503876 0.038759690 0.945736434)  </span></span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a><span class="co">#&gt;     6) bill_depth_mm&gt;=17.65 7   2 Chinstrap (0.285714286 0.714285714 0.000000000) *</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a><span class="co">#&gt;     7) bill_depth_mm&lt; 17.65 122   0 Gentoo (0.000000000 0.000000000 1.000000000) *</span></span></code></pre></div>
 </div>
 <div id="d-slice" class="section level2">
 <h2>2D Slice</h2>
@@ -453,6 +465,12 @@ different slice through the 3D boundary is being rendered.</p>
 the feature matrix by a 2-column basis matrix. Rather than holding
 features fixed, it combines them: each projected point summarizes
 information from all original features simultaneously.</p>
+<p>The decision regions are computed differently from the points. The
+grid is built on the plane spanned by the two basis columns, passing
+through the data center, and each grid point is mapped back to the
+original feature space before prediction. The colored regions are
+therefore a planar section (a zero-thickness slice) of the full decision
+boundary along that plane, not a projection of it.</p>
 <blockquote>
 <p><strong>Note on Explorapp vs Scripts:</strong> In the
 <code>explorapp()</code> interactive UI, Projection mode uses PCA
@@ -496,7 +514,10 @@ construction.</p>
 <p>Points are forward-projected onto the plane for overlay. Points that
 are far from the projection plane in the original 3D space are rendered
 with lower opacity (depth fading), giving a visual indication of how
-faithfully each point’s position is captured.</p>
+faithfully each point’s position is captured. A point far from the plane
+can appear inside a region that does not match the model’s prediction
+for that point, because the region color describes the plane, not the
+point itself.</p>
 </div>
 <div id="when-to-use-each-strategy" class="section level2">
 <h2>When to use each strategy</h2>

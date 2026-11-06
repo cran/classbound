@@ -7,6 +7,9 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
+# install.packages("classbound")
+
+## ----eval=FALSE---------------------------------------------------------------
 # devtools::install_github("natydasilva/classbound")
 
 ## ----quickstart, message=FALSE, warning=FALSE---------------------------------

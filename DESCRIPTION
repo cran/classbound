@@ -1,6 +1,6 @@
 Package: classbound
 Title: Visualization for Classification Decision Boundaries
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person(given = "Vaibhav",
            family = "Manihar",
@@ -14,7 +14,7 @@ Authors@R: c(
     person(given = "Ignacio",
            family = "Alvarez-Castro",
            role = "aut",
-           email = "ignacio.lavarez@fcea.edu.uy",
+           email = "ignacio.alvarez@fcea.edu.uy",
            comment = c(ORCID = "https://orcid.org/0000-0003-1633-2432"))        
     )
 Description: Exploring, visualizing, and comparing classification decision boundaries.
@@ -35,17 +35,17 @@ Imports: class, ggplot2, rlang, ggnewscale, shiny, DT, RColorBrewer
 Suggests: tidymodels, workflowsets, workflows, parsnip, tourr, rpart,
         roxygen2 (>= 7.3.0), PPtreeViz, PPtreeExt, ppforest2,
         randomForest, testthat (>= 3.0.0), knitr, rmarkdown,
-        palmerpenguins, e1071, MixSim, MASS, jsonlite
+        palmerpenguins, e1071, MixSim, MASS, jsonlite, zip
 Encoding: UTF-8
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: no
-Packaged: 2026-09-20 18:35:46 UTC; Manihar
+Packaged: 2026-11-06 08:49:51 UTC; Manihar
 Author: Vaibhav Manihar [aut, cre],
   Natalia da Silva [aut] (ORCID: <https://orcid.org/0000-0002-6031-7451>),
   Ignacio Alvarez-Castro [aut] (ORCID:
     <https://orcid.org/0000-0003-1633-2432>)
 Maintainer: Vaibhav Manihar <vaibhav.manihar@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-09-30 09:10:15 UTC
+Date/Publication: 2026-11-06 12:40:02 UTC

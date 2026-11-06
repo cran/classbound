@@ -154,7 +154,9 @@ plot_boundary <- function(model, obs_data = NULL, x_col = NULL, y_col = NULL,
   }
 
   levs <- if (is.factor(boundary$prediction)) levels(boundary$prediction) else unique(as.character(boundary$prediction))
-  if (type != "disagreement") {
+  # The class color scale is also needed for the observation overlay in
+  # disagreement plots.
+  if (type != "disagreement" || !is.null(obs_data)) {
     if (!is.null(colors)) {
       if (is.null(names(colors))) {
         stop("The 'colors' argument must be a named vector (e.g., c('Class 1' = 'red')).", call. = FALSE)
@@ -291,13 +293,21 @@ plot_boundary <- function(model, obs_data = NULL, x_col = NULL, y_col = NULL,
     if (!is.null(model$projection)) {
       proj <- model$projection
       features <- rownames(proj$basis)
+      if (is.null(features)) {
+        # A basis without row names (e.g., straight from tourr) is assumed to follow
+        # the order of the training features, as in boundary_compute().
+        features <- model$metadata$features$names
+        if (length(features) != nrow(proj$basis)) {
+          stop("`projection$basis` has no row names and its rows do not match the training features.", call. = FALSE)
+        }
+      }
 
       if (!all(features %in% colnames(obs_data))) {
         stop("obs_data is missing features required for the projection basis.", call. = FALSE)
       }
 
       # Extract numeric matrix for projection
-      x_mat <- as.matrix(obs_data[, features])
+      x_mat <- as.matrix(obs_data[, features, drop = FALSE])
 
       # Apply standardization
       if (!is.null(proj$center)) {
